@@ -1,114 +1,173 @@
 import streamlit as st
-import pandas as pd
 import joblib
+import pandas as pd
 
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+# ======================
+# CONFIG
+# ======================
 
 st.set_page_config(
     page_title="Sentiment Analysis",
-    page_icon="📊"
+    page_icon="📊",
+    layout="wide"
 )
 
-vectorizer = joblib.load(
-    "vectorizer.pkl"
-)
+# ======================
+# LOAD FILES
+# ======================
 
-tokenizer = joblib.load(
-    "tokenizer.pkl"
-)
+vectorizer = joblib.load("vectorizer.pkl")
 
 models = {
-    "Logistic Regression":
-        joblib.load(
-            "logreg_model.pkl"
-        ),
-
-    "SVM":
-        joblib.load(
-            "svm_model.pkl"
-        ),
-
-    "Random Forest":
-        joblib.load(
-            "random_forest.pkl"
-        )
+    "Logistic Regression": joblib.load("logreg_model.pkl"),
+    "SVM": joblib.load("svm_model.pkl")
 }
 
-lstm_model = load_model(
-    "lstm_model.keras"
-)
+# ======================
+# SIDEBAR
+# ======================
 
-st.title(
-    "📊 Sentiment Analysis Indonesia"
-)
+st.sidebar.title("⚙️ Pengaturan")
 
-selected_model = st.selectbox(
+selected_model = st.sidebar.selectbox(
     "Pilih Model",
-    [
-        "Logistic Regression",
-        "SVM",
-        "Random Forest",
-        "LSTM"
-    ]
+    list(models.keys())
+)
+
+st.sidebar.markdown("---")
+
+st.sidebar.info(
+    """
+    **Sentiment Analysis Indonesia**
+
+    Dataset:
+    Review teks berlabel positif dan negatif
+
+    Model:
+    - Logistic Regression
+    - Support Vector Machine
+
+    Dibuat oleh:
+    Joycelin
+    """
+)
+
+# ======================
+# MAIN PAGE
+# ======================
+
+st.title("📊 Sentiment Analysis Dashboard")
+
+st.markdown(
+    """
+    Masukkan sebuah kalimat atau review untuk diprediksi sentimennya.
+    """
 )
 
 text = st.text_area(
-    "Masukkan Review"
+    "Masukkan Review",
+    height=150,
+    placeholder="Contoh: produk ini sangat bagus dan pengirimannya cepat"
 )
 
-if st.button("Prediksi"):
+# ======================
+# SINGLE PREDICTION
+# ======================
 
-    if selected_model == "LSTM":
+if st.button("🔍 Prediksi Sentimen"):
 
-        seq = tokenizer.texts_to_sequences(
-            [text]
-        )
-
-        pad = pad_sequences(
-            seq,
-            maxlen=50
-        )
-
-        prob = lstm_model.predict(
-            pad,
-            verbose=0
-        )[0][0]
-
-        pred = 1 if prob >= 0.5 else 0
-
-        confidence = prob if pred == 1 else (1-prob)
-
+    if text.strip() == "":
+        st.warning("Masukkan teks terlebih dahulu.")
     else:
 
-        vec = vectorizer.transform(
-            [text]
-        )
+        model = models[selected_model]
 
-        model = models[
-            selected_model
-        ]
+        vector = vectorizer.transform([text])
 
-        pred = model.predict(
-            vec
-        )[0]
+        prediction = model.predict(vector)[0]
 
-        prob = model.predict_proba(
-            vec
-        )[0]
+        probability = model.predict_proba(vector)[0]
 
-        confidence = max(prob)
+        confidence = max(probability) * 100
 
-    if pred == 1:
-        st.success(
-            "😊 Positif"
-        )
-    else:
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            if prediction == 1:
+                st.success("😊 Sentimen Positif")
+            else:
+                st.error("😠 Sentimen Negatif")
+
+        with col2:
+
+            st.metric(
+                label="Confidence",
+                value=f"{confidence:.2f}%"
+            )
+
+# ======================
+# BATCH PREDICTION
+# ======================
+
+st.markdown("---")
+
+st.subheader("📂 Prediksi Banyak Data")
+
+uploaded_file = st.file_uploader(
+    "Upload file CSV",
+    type=["csv"]
+)
+
+if uploaded_file is not None:
+
+    df = pd.read_csv(uploaded_file)
+
+    st.write("Preview Data:")
+    st.dataframe(df.head())
+
+    if "text" not in df.columns:
+
         st.error(
-            "😠 Negatif"
+            "CSV harus memiliki kolom bernama 'text'"
         )
 
-    st.metric(
-        "Confidence",
-        f"{confidence*100:.2f}%"
-    )
+    else:
+
+        model = models[selected_model]
+
+        vectors = vectorizer.transform(
+            df["text"]
+        )
+
+        preds = model.predict(vectors)
+
+        df["prediction"] = preds
+
+        df["prediction"] = df["prediction"].map({
+            1: "Positif",
+            0: "Negatif"
+        })
+
+        st.success("Prediksi berhasil")
+
+        st.dataframe(df)
+
+        csv = df.to_csv(index=False)
+
+        st.download_button(
+            label="⬇️ Download Hasil",
+            data=csv,
+            file_name="hasil_prediksi.csv",
+            mime="text/csv"
+        )
+
+# ======================
+# FOOTER
+# ======================
+
+st.markdown("---")
+
+st.caption(
+    "Sentiment Analysis menggunakan TF-IDF + Machine Learning"
+)
