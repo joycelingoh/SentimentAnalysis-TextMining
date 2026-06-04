@@ -188,5 +188,5 @@ if uploaded_file is not None:
 st.markdown("---")
 
 st.caption(
-    "Sentiment Analysis menggunakan TF-IDF dan Logistic Regression"
+    "Sentiment Analysis menggunakan TF-IDF dan Logistic Regression - Joycelin (2702213713)"
 )
