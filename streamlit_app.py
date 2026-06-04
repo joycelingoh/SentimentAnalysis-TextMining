@@ -40,6 +40,8 @@ st.sidebar.info(
 
     Dataset:
     Review Positif & Negatif
+
+    Oleh: Joycelin
     """
 )
 
