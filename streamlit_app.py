@@ -50,5 +50,6 @@ st.sidebar.info(
     """
     Aplikasi Sentiment Analysis
     menggunakan TF-IDF dan Machine Learning.
+    Oleh: Joycelin
     """
 )
