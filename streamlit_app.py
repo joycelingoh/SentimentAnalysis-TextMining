@@ -36,7 +36,7 @@ models = {
 }
 
 lstm_model = load_model(
-    "lstm_model.h5"
+    "lstm_model.keras"
 )
 
 st.title(
