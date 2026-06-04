@@ -32,10 +32,9 @@ st.sidebar.title("📊 Sentiment Analysis")
 
 st.sidebar.info(
     """
-    Aplikasi Sentiment Analysis
-    menggunakan TF-IDF Vectorizer dan Logistic Regression
+    Aplikasi Sentiment Analysis menggunakan TF-IDF Vectorizer dan Logistic Regression
 
-    Oleh: Joycelin
+    Oleh: Joycelin (2702213713)
     """
 )
 
