@@ -33,10 +33,7 @@ st.sidebar.title("📊 Sentiment Analysis")
 st.sidebar.info(
     """
     Aplikasi Sentiment Analysis
-    menggunakan:
-
-    • TF-IDF Vectorizer
-    • Logistic Regression
+    menggunakan TF-IDF Vectorizer dan Logistic Regression
 
     Dataset:
     Review Positif & Negatif
