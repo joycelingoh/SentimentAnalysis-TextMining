@@ -21,12 +21,12 @@ tokenizer = joblib.load(
 models = {
     "Logistic Regression":
         joblib.load(
-            "logistic_regression.pkl"
+            "logreg_model.pkl"
         ),
 
     "SVM":
         joblib.load(
-            "svm.pkl"
+            "svm_model.pkl"
         ),
 
     "Random Forest":
