@@ -35,33 +35,9 @@ st.sidebar.info(
     Aplikasi Sentiment Analysis
     menggunakan TF-IDF Vectorizer dan Logistic Regression
 
-    Dataset:
-    Review Positif & Negatif
-
     Oleh: Joycelin
     """
 )
-
-st.sidebar.markdown("---")
-
-st.sidebar.subheader("📈 Model Performance")
-
-performance_df = pd.DataFrame({
-    "Metric": [
-        "Accuracy",
-        "Precision",
-        "Recall",
-        "F1-Score"
-    ],
-    "Value": [
-        "96.8%",
-        "96.5%",
-        "97.1%",
-        "96.8%"
-    ]
-})
-
-st.sidebar.table(performance_df)
 
 # =====================================
 # TITLE
